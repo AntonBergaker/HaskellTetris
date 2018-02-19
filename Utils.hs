@@ -19,10 +19,14 @@ overlap field piece offset = undefined;
 	Returns true if the line is completely filled with blocks
 -}
 lineFull :: [Block] -> Bool
-lineFull line = undefined;
+lineFull [] = True;
+lineFull (Block _:xs) = lineFull xs;
+lineFull (Void:xs) = False;
 
 {- lineEmpty line
 	Returns true if the line is completely empty of blocks
 -}
 lineEmpty :: [Block] -> Bool
-lineEmpty line = undefined;
+lineEmpty [] = True;
+lineEmpty (Void:xs) = lineEmpty xs;
+lineEmpty (Block _:xs) = False;
