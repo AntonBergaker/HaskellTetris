@@ -54,8 +54,8 @@ test1 = TestCase $ assertEqual "rotate"
 	([ [ Void, Block red ], [Void, Block red] ]) ([ [ Block red, Block red ], [Void, Void] ])
 -- Tests if a simple move is allowed or not. True if allowed.
 test2 = TestCase $ assertEqual "canMove"
-	([[Void,Void]), [Block blue, Block blue]]) ([[Void,Void,Void],[Void,Void,Void]]) (0,0) (+1)   (True)
+	 (True) (([[Void,Void], [Block blue, Block blue]]) ([[Void,Void,Void],[Void,Void,Void]]) (0,0) (+1))
 -- -""-
 test3 = TestCase $ assertEqual "canMove"
-	([[Void,Void],[Block blue, Block blue]]) ([[Void,Void,Void],[Void,Block blue, Block blue]]) (0,0) (+1) (False)
+	(False) (([[Void,Void],[Block blue, Block blue]]) ([[Void,Void,Void],[Void,Block blue, Block blue]]) (0,0) (+1))
 runtests = runTestTT $ TestList [test1,test2,test3]
