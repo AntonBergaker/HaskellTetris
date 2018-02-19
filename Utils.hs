@@ -1,13 +1,15 @@
-module Utils( rotate, overlap, lineFull, lineEmpty) where
+module Utils( turn, overlap, lineFull, lineEmpty) where
 
 import TetrisTypes
-
+import Data.List
 
 {- rotate grid
 	returns the given grid rotated clockwise
 -}
-rotate :: Grid -> Grid
-rotate grid = undefined;
+turn :: Grid -> Grid
+turn grid = (map reverse . transpose) grid
+
+
 
 {- overlap board piece offset
 	Checks if a given piece collides with the grid at the given offset and returns true if it does
