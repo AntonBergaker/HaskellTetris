@@ -9,9 +9,27 @@ import Test.HUnit
 {- fall
 	Checks if a piece can be moved down and if it can't returns a new piece and the old piece applied to the grid otherwise returns a new offset where the piece has been moved 1 step
 -}
-fall :: Grid -> Grid -> Position -> (Grid -> Grid -> Position)
-fall board piece offset = undefined;
+fall :: Grid -> Grid -> Position -> (Grid, Grid, Position)
+fall board piece (x, y) = if canFall
+		then (board, piece, (x, y+1))
+		else (newBoard, newPiece, (5, 0))
+	where
+		canFall = overlap board piece (x, y+1)
+		newPiece = randomPiece;
+		newBoard = mergeGrids board piece (x, y)
 
+{- mergeGrids grid1 grid2 offset
+	Merges two grids into a single grid with the size of grid1
+-}
+mergeGrids :: Grid -> Grid -> Position -> Grid
+mergeGrids = undefined;
+
+
+{- randomPiece 
+	Returns a random piece
+-}
+randomPiece :: Grid
+randomPiece = undefined;
 
 {- applyMove
 	Checks if a piece can be moved the given movement and returns a new offset
@@ -54,7 +72,7 @@ test1 = TestCase $ assertEqual "rotate"
 	([ [ Void, Block red ], [Void, Block red] ]) ([ [ Block red, Block red ], [Void, Void] ])
 -- Tests if a simple move is allowed or not. True if allowed.
 test2 = TestCase $ assertEqual "canMove"
-	([[Void,Void]), [Block blue, Block blue]]) ([[Void,Void,Void],[Void,Void,Void]]) (0,0) (+1)   (True)
+	([[Void,Void], [Block blue, Block blue]]) ([[Void,Void,Void],[Void,Void,Void]]) (0,0) (+1)   (True)
 -- -""-
 test3 = TestCase $ assertEqual "canMove"
 	([[Void,Void],[Block blue, Block blue]]) ([[Void,Void,Void],[Void,Block blue, Block blue]]) (0,0) (+1) (False)
