@@ -1,9 +1,9 @@
---module HaskellTetris(fall, applyMove, applyRotate, linesCleared) where
-
 import TetrisTypes
 import Utils
 import Graphics.Gloss
 import Test.HUnit
+import Pieces
+
 
 
 {- fall
@@ -65,8 +65,6 @@ linesCleared :: Grid -> (Grid, Int)
 linesCleared board = undefined;
 
 
-
-
  -- Tests a simple rotation of a small grid
 test1 = TestCase $ assertEqual "rotate"
 	([ [ Void, Block red ], [Void, Block red] ]) ([ [ Block red, Block red ], [Void, Void] ])
@@ -76,4 +74,5 @@ test2 = TestCase $ assertEqual "canMove"
 -- -""-
 test3 = TestCase $ assertEqual "canMove"
 	(False) (([[Void,Void],[Block blue, Block blue]]) ([[Void,Void,Void],[Void,Block blue, Block blue]]) (0,0) (+1))
+
 runtests = runTestTT $ TestList [test1,test2,test3]
