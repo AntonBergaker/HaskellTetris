@@ -19,14 +19,14 @@ fall board piece offset = undefined;
 applyMove :: Grid -> Grid -> Position -> Int -> Position
 applyMove board piece offset movement = undefined;
 
-{- canMove 
+{- canMove
 	Checks if a piece can be moved the indicated movement
 -}
 canMove :: Grid -> Grid -> Position -> Int -> Bool
 canMove board piece offset movement = undefined;
 
 
-{- applyRotate 
+{- applyRotate
 	Checks if you can rotate and if you can return the rotated piece
 -}
 applyRotate :: Grid -> Grid -> Position -> Grid
@@ -52,6 +52,10 @@ linesCleared board = undefined;
  -- Tests a simple rotation of a small grid
 test1 = TestCase $ assertEqual "rotate"
 	([ [ Void, Block red ], [Void, Block red] ]) ([ [ Block red, Block red ], [Void, Void] ])
-
-
-runtests = runTestTT $ TestList [test1]
+-- Tests if a simple move is allowed or not. True if allowed.
+test2 = TestCase $ assertEqual "canMove"
+	([[Void,Void]), [Block blue, Block blue]]) ([[Void,Void,Void],[Void,Void,Void]]) (0,0) (+1)   (True)
+-- -""-
+test3 = TestCase $ assertEqual "canMove"
+	([[Void,Void],[Block blue, Block blue]]) ([[Void,Void,Void],[Void,Block blue, Block blue]]) (0,0) (+1) (False)
+runtests = runTestTT $ TestList [test1,test2,test3]
