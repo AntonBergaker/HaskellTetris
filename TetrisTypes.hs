@@ -1,5 +1,4 @@
 module TetrisTypes( Block (Block, Void) , Grid, Position, GameState) where
-
 import Graphics.Gloss
 
 
