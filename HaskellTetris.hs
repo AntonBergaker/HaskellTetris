@@ -38,6 +38,9 @@ handleKeys (EventKey (SpecialKey KeyRight) Down _ _) (board, piece, offset, scor
 handleKeys (EventKey (SpecialKey KeyUp) Down _ _) (board, piece, offset, score, time) = (board, newPiece, offset, score, time)
 	where
 		newPiece = applyRotate board piece offset
+handleKeys (EventKey (SpecialKey KeyDown) Down _ _)  (board, piece, offset, score, time) = (board , piece, newOffsetDive, score, time)
+	where
+		newOffsetDive = dive board piece offset
 handleKeys _ gameState = gameState
 
 
@@ -87,6 +90,11 @@ fall board piece (x, y) time = if (canFall)
 		canFall = validPlace board piece (x,y+1)
 		newPiece = randomPiece time;
 		newBoard = mergeGrids board piece (x, y)
+
+dive :: Grid -> Grid -> Position -> Position
+dive board piece (x,y)
+		| validPlace board piece offset = dive board piece (x,(y+1))
+		| otherwise = (x,y)
 
 {- mergeGrids grid1 grid2 offset
 	Merges two grids into a single grid with the size of grid1
