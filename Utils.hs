@@ -1,4 +1,4 @@
-module Utils( turn, overlap, lineFull, lineEmpty) where
+module Utils( turn, overlap, lineFull, lineEmpty, isVoid) where
 
 import TetrisTypes
 import Data.List
@@ -32,7 +32,7 @@ overlapRow (_:xs) (_:ys) = overlapRow xs ys
 
 
 isVoid :: Block -> Bool
-isVoid Block _ = False
+isVoid (Block _) = False
 isVoid Void = True
 {- lineFull line
 	Returns true if the line is completely filled with blocks

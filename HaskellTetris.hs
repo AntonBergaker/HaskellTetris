@@ -71,13 +71,13 @@ renderRow ((Block c):bs) (x,y) = color c ((translate (x-160) (320-y) (rectangleS
 	Checks if a piece can be moved down and if it can't returns a new piece and the old piece applied to the grid otherwise returns a new offset where the piece has been moved 1 step
 -}
 fall :: Grid -> Grid -> Position -> (Grid, Grid, Position)
-fall board piece (x, y) = --if canFall
-		{-then-} (board, piece, (x, y+1))
-		--else (newBoard, newPiece, (5, 0))
+fall board piece (x, y) = if (overlap board piece (x,y+1))
+		then (newBoard, newPiece, (5, 0))
+		else (board, piece, (x, y+1))
 	where
 		canFall = overlap board piece (x, y+1)
 		newPiece = randomPiece;
-		newBoard = undefined --mergeGrids board piece (x, y)
+		newBoard = mergeGrids board piece (x, y)
 
 {- mergeGrids grid1 grid2 offset
 	Merges two grids into a single grid with the size of grid1
@@ -87,7 +87,7 @@ mergeGrids [] _ _ = []
 mergeGrids grid1 [] _ = grid1
 mergeGrids (g:gs) (h:hs) (x,y)
 		| y > 0 = g:(mergeGrids (gs) (h:hs) (x,(y-1)))
-		| otherwise = g:(mergeGrids (gs) (hs) (x,y))
+		| otherwise = (mergeRows g h (x,y)):(mergeGrids (gs) (hs) (x,y))
 		where
 			mergeRows [] _ _ = []
 			mergeRows row1 [] _ = row1
@@ -101,7 +101,7 @@ mergeGrids (g:gs) (h:hs) (x,y)
 	Returns a random piece
 -}
 randomPiece :: Grid
-randomPiece =  shapes !! (fst(randomR (1,7) 3 )
+randomPiece =  shapes !! 4
 
 
 {- applyMove
