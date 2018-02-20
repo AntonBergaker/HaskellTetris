@@ -26,7 +26,17 @@ emptyBoard :: Grid
 emptyBoard = replicate 20 $ replicate 10 Void
 
 handleKeys :: Event -> GameState -> GameState
-handleKeys _ gs = gs;
+handleKeys (EventKey (SpecialKey KeyLeft ) Down _ _) (board, piece, offset, score, time) = (board, piece, newOffsetL, score, time)
+	where
+		newOffsetL = applyMove board piece offset (-1)
+handleKeys (EventKey (SpecialKey KeyRight) Down _ _) (board, piece, offset, score, time) = (board, piece, newOffsetR, score, time)
+	where
+		newOffsetR = applyMove board piece offset ( 1)
+handleKeys (EventKey (SpecialKey KeyUp) Down _ _) (board, piece, offset, score, time) = (board, newPiece, offset, score, time)
+	where
+		newPiece = applyRotate board piece offset
+handleKeys _ gameState = gameState
+
 
 update :: Float -> GameState -> GameState
 update inc (board, piece, offset, score, time) = (newBoard, newPiece, newOffset, score, time)
@@ -67,7 +77,7 @@ fall board piece (x, y) = --if canFall
 	where
 		canFall = overlap board piece (x, y+1)
 		newPiece = randomPiece;
-		newBoard = mergeGrids board piece (x, y)
+		newBoard = undefined --mergeGrids board piece (x, y)
 
 {- mergeGrids grid1 grid2 offset
 	Merges two grids into a single grid with the size of grid1
@@ -97,8 +107,12 @@ randomPiece =  shapes !! (fst(randomR (1,7) 3 )
 {- applyMove
 	Checks if a piece can be moved the given movement and returns a new offset
 -}
-applyMove :: Grid -> Grid -> Position -> Int -> Position
-applyMove board piece offset movement = undefined;
+applyMove :: Grid -> Grid -> Position -> Float -> Position
+applyMove board piece offset@(x,y) movement = if cM
+		then (x+movement,y)
+		else offset
+	where
+		cM = canMove board piece offset movement
 
 {- canMove
 	Checks if a piece can be moved the indicated movement
@@ -113,14 +127,13 @@ canMove board piece (x,y) movement = not (overlap board piece o)
 	Checks if you can rotate and if you can return the rotated piece
 -}
 applyRotate :: Grid -> Grid -> Position -> Grid
-applyRotate board piece offset = undefined;
+applyRotate board piece offset =
+	if (overlap board newPiece offset)
+		then piece
+		else newPiece
+	where
+		newPiece = turn piece
 
-
-{- canRotate
-	Checks if a piece can rotate at a given position
--}
-canRotate :: Grid -> Grid -> Position -> Bool
-canRotate board piece offset = undefined;
 
 
 {- linesCleared board
