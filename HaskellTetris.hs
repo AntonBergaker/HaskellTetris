@@ -164,18 +164,15 @@ applyRotate board piece offset =
 
 {- linesCleared board
 	Returns a board where if any lines are full they are cleared and gives how many lines were cleared
-
+-}
 linesCleared :: Grid -> Int -> (Grid, Int)
 linesCleared [] 0 = ([],0)
 linesCleared board@(x:xs) n
-		| lineFull x = (clear' x):(linesCleared xs (n+1))
-		| not(lineFull x) = x:(linesCleared xs n)
-		| otherwise = (board,n)
-			where 
-				clear' [] = []
-				clear' [Block _] = [Void]
-				clear' [Void] = [Void]
-				clear' (x:xs) = (clear' x):(clear' xs) -}
+		| lineFull x = voidRow :linesCleared xs (n+1))
+		| otherwise = linesCleared xs n
+			where
+				voidRow = replicate 10 Void
+
 
  -- Tests a simple rotation of a small grid
 test1 = TestCase $ assertEqual "rotate"
