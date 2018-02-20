@@ -91,18 +91,16 @@ fall board piece (x, y) time score = if (canFall)
 		newPiece = randomPiece time;
 		newBoard = mergeGrids board piece (x, y)
 
-<<<<<<< HEAD
 dive :: Grid -> Grid -> Position -> Position
 dive board piece (x,y)
 		| validPlace board piece offset = dive board piece (x,(y+1))
 		| otherwise = (x,y)
-=======
+
 
 getScore :: Int -> Int
 getScore score = if (score <= 0)
 	then 0
 	else (score^2)*10+50
->>>>>>> 0f48027fa93ae96eaa2a74fd211ffa062591fe1b
 
 {- mergeGrids grid1 grid2 offset
 	Merges two grids into a single grid with the size of grid1
@@ -117,6 +115,7 @@ mergeGrids (g:gs) (h:hs) (x,y)
 			mergeRows [] _ _ = []
 			mergeRows row1 [] _ = row1
 			mergeRows (g:gs) (h:hs) (x,y)
+				| x < 0 = (mergeRows (g:gs) (hs) (x+1,y))
 				| x > 0 = g:(mergeRows gs (h:hs) (x-1,y))
 				| isVoid h = g:(mergeRows (gs) (hs) (x,y))
 				| otherwise = h:(mergeRows (gs) (hs) (x,y))
