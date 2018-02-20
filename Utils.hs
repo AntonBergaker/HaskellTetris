@@ -14,7 +14,22 @@ turn grid = (map reverse . transpose) grid
 	Checks if a given piece collides with the grid at the given offset and returns true if it does
 -}
 overlap :: Grid -> Grid -> Position -> Bool
-overlap field piece offset = undefined;
+overlap field piece (xOff, yOff) = overlap' (drop (round yOff) field) piece (round xOff)
+	where
+		overlap' :: Grid -> Grid -> Int -> Bool
+		overlap' [] _ _ = False
+		overlap' _ [] _ = False
+		overlap' (x:xs) (y:ys) xOff = if (overlapRow (drop xOff x) y)
+			then True
+			else overlap' xs ys xOff
+
+
+overlapRow :: [Block] -> [Block] -> Bool
+overlapRow [] _ = False
+overlapRow _ [] = False
+overlapRow (Block _:_) (Block _:_) = True
+overlapRow (_:xs) (_:ys) = overlapRow xs ys
+
 
 {- lineFull line
 	Returns true if the line is completely filled with blocks
