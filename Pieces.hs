@@ -3,13 +3,14 @@ module Pieces(shapes, i, j, l, o, s, t, z) where
 import TetrisTypes
 import Graphics.Gloss
 
-iC = cyan;
-jC = blue;
-lC = orange;
-oC = yellow;
-sC = green;
-tC = magenta;
-zC = red;
+
+iC = makeColor (106/255) (236/255) (244/255) 1;
+jC = makeColor (69 /255) (115/255) (231/255) 1;
+lC = makeColor (255/255) (186/255) (109/255) 1;
+oC = makeColor (173/255) (97 /255) (237/255) 1;
+sC = makeColor (178/255) (240/255) (104/255) 1;
+tC = makeColor (253/255) (166/255) (248/255) 1;
+zC = makeColor (236/255) (111/255) (134/255) 1;
 
 i = [
 	[Void, Void, Block iC, Void],
