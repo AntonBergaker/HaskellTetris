@@ -81,8 +81,9 @@ renderRow ((Block c):bs) (x,y) = color c ((translate (x-160) (320-y) (rectangleS
 fall :: Grid -> Grid -> Position -> Float -> (Grid, Grid, Position)
 fall board piece (x, y) time = if (canFall)
 		then (board, piece, (x, y+1))
-		else (newBoard, newPiece, (5, 0))
+		else (clearedBoard, newPiece, (5, 0))
 	where
+		(clearedBoard, newPoints) = linesCleared newBoard
 		canFall = validPlace board piece (x,y+1)
 		newPiece = randomPiece time;
 		newBoard = mergeGrids board piece (x, y)
@@ -165,13 +166,21 @@ applyRotate board piece offset =
 {- linesCleared board
 	Returns a board where if any lines are full they are cleared and gives how many lines were cleared
 -}
-linesCleared :: Grid -> Int -> (Grid, Int)
-linesCleared [] 0 = ([],0)
-linesCleared board@(x:xs) n
-		| lineFull x = voidRow :linesCleared xs (n+1))
-		| otherwise = linesCleared xs n
-			where
-				voidRow = replicate 10 Void
+linesCleared :: Grid -> (Grid, Int)
+linesCleared board = ((replicate missingLines voidRow) ++ remainingLines, 20 - missingLines)
+		where
+			remainingLines = linesCleared' board
+			missingLines = 20 - (length remainingLines)
+
+			linesCleared' :: Grid -> Grid
+			linesCleared' [] = []
+			linesCleared' (x:xs)
+				| lineFull x = linesCleared' xs
+				| otherwise = x:(linesCleared' xs)
+
+			voidRow = replicate 10 Void
+
+
 
 
  -- Tests a simple rotation of a small grid
