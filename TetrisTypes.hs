@@ -8,4 +8,4 @@ type Grid = [[Block]]
 type Position = (Float,Float)
 
 
-type GameState = (Grid, Grid, Position, Int, Double)
+type GameState = (Grid, Grid, Position, Int, Float)

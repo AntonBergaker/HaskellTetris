@@ -7,7 +7,7 @@ import Pieces
 import System.Random
 
 main :: IO ()
-main = play window background 1 newGameState render handleKeys update
+main = play window background 60 newGameState render handleKeys update
 
 window :: Display
 window = InWindow "Tetris" (400, 640) (10, 10)
@@ -42,9 +42,14 @@ handleKeys _ gameState = gameState
 
 
 update :: Float -> GameState -> GameState
-update inc (board, piece, offset, score, time) = (newBoard, newPiece, newOffset, score, time)
+update inc (board, piece, offset, score, time) =
+		if (totalTime > fallTime)
+			then (newBoard, newPiece, newOffset, score, totalTime - fallTime)
+			else (board   , piece   , offset   , score, totalTime)
 	where
-		(newBoard, newPiece, newOffset) = fall board piece offset
+		totalTime = time + inc
+		fallTime = 0.33
+		(newBoard, newPiece, newOffset) = fall board piece offset time
 
 {- render gamestate
 	Creates a picture from the given gamestate
@@ -73,13 +78,13 @@ renderRow ((Block c):bs) (x,y) = color c ((translate (x-160) (320-y) (rectangleS
 {- fall
 	Checks if a piece can be moved down and if it can't returns a new piece and the old piece applied to the grid otherwise returns a new offset where the piece has been moved 1 step
 -}
-fall :: Grid -> Grid -> Position -> (Grid, Grid, Position)
-fall board piece (x, y) = if (validPlace board piece (x,y+1))
+fall :: Grid -> Grid -> Position -> Float -> (Grid, Grid, Position)
+fall board piece (x, y) time = if (canFall)
 		then (board, piece, (x, y+1))
 		else (newBoard, newPiece, (5, 0))
 	where
-		canFall = overlap board piece (x, y+1)
-		newPiece = randomPiece;
+		canFall = validPlace board piece (x,y+1)
+		newPiece = randomPiece time;
 		newBoard = mergeGrids board piece (x, y)
 
 {- mergeGrids grid1 grid2 offset
@@ -121,8 +126,8 @@ inBounds (r: rs) (x,y) bounds
 {- randomPiece
 	Returns a random piece
 -}
-randomPiece :: Grid
-randomPiece =  shapes !! 4
+randomPiece :: Float -> Grid
+randomPiece time =  shapes !! ( (round (time*100000)) `mod` 7)
 
 
 {- applyMove
@@ -139,7 +144,7 @@ applyMove board piece offset@(x,y) movement = if cM
 	Checks if a piece can be moved the indicated movement
 -}
 canMove :: Grid -> Grid -> Position -> Float -> Bool
-canMove board piece (x,y) movement = not (overlap board piece o)
+canMove board piece (x,y) movement = (validPlace board piece o)
 	where
 		o = (x+movement, y)
 
@@ -149,9 +154,9 @@ canMove board piece (x,y) movement = not (overlap board piece o)
 -}
 applyRotate :: Grid -> Grid -> Position -> Grid
 applyRotate board piece offset =
-	if (overlap board newPiece offset)
-		then piece
-		else newPiece
+	if (validPlace board newPiece offset)
+		then newPiece
+		else piece
 	where
 		newPiece = turn piece
 
@@ -159,7 +164,7 @@ applyRotate board piece offset =
 
 {- linesCleared board
 	Returns a board where if any lines are full they are cleared and gives how many lines were cleared
--}
+
 linesCleared :: Grid -> Int -> (Grid, Int)
 linesCleared [] 0 = ([],0)
 linesCleared board@(x:xs) n
@@ -170,7 +175,7 @@ linesCleared board@(x:xs) n
 				clear' [] = []
 				clear' [Block _] = [Void]
 				clear' [Void] = [Void]
-				clear' (x:xs) = (clear' x):(clear' xs)
+				clear' (x:xs) = (clear' x):(clear' xs) -}
 
  -- Tests a simple rotation of a small grid
 test1 = TestCase $ assertEqual "rotate"
