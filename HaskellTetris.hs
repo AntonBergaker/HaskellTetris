@@ -4,7 +4,47 @@ import Graphics.Gloss
 import Test.HUnit
 import Pieces
 
+main :: IO ()
+main = display window background (render newGameState)
 
+window :: Display
+window = InWindow "Tetris" (400, 640) (10, 10)
+
+background :: Color
+background = black
+
+blockSize :: Float
+blockSize = 32
+
+newGameState :: GameState
+newGameState = (emptyBoard, t, (5,0), 0, 0)
+
+emptyBoard :: Grid
+emptyBoard = replicate 20 $ replicate 10 Void
+
+{- render gamestate
+	Creates a picture from the given gamestate
+-}
+render :: GameState -> Picture
+render (board, piece, offset, score, time) = pictures (boardPictures ++ piecePictures)
+	where
+		boardPictures = renderGrid board (0,0)
+		piecePictures = renderGrid piece offset
+
+{- renderGrid grid position
+	returns a list of pictures from the input grid and position
+-}
+renderGrid :: Grid -> Position -> [Picture]
+renderGrid [] _ = []
+renderGrid (r:rs) p@(x,y) = (renderRow r p) ++ (renderGrid rs (x,y+blockSize))
+
+{- renderRow grid position
+	returns a list of pictures from the given row and position
+-}
+renderRow :: [Block] -> Position -> [Picture]
+renderRow [] _ = []
+renderRow (Void:bs) (x,y) = renderRow bs (x+blockSize, y)
+renderRow (Block c:bs) (x,y) = color c ((translate (x) (y) (rectangleSolid blockSize blockSize))) : (renderRow bs (x+blockSize, y))
 
 {- fall
 	Checks if a piece can be moved down and if it can't returns a new piece and the old piece applied to the grid otherwise returns a new offset where the piece has been moved 1 step
