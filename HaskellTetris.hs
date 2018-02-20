@@ -4,6 +4,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import Test.HUnit
 import Pieces
+import System.Random
 
 main :: IO ()
 main = play window background 1 newGameState render handleKeys update
@@ -70,27 +71,27 @@ fall board piece (x, y) = --if canFall
 
 {- mergeGrids grid1 grid2 offset
 	Merges two grids into a single grid with the size of grid1
-
-mergeGrids :: Grid -> Grid -> Position -> Grid
-mergeGrids grid1 grid2 offset = dropToOffset grid1 grid2 offset
-	where dropToOffset grid1 grid2 offset
-		| grid1 == offset && grid2 == offset = merge' grid1 grid2
-		| otherwise dropToOffset (drop 1 (tail(grid1) (drop 1 (tail(grid2)))
-			where
-				merge' [] [] = []
-				merge'
-				merge' [(x:xs)] [(y:ys)]
-					| head(x) == Void && head(y) == Void = [(merge' xs ys):Void]
-					| head(x) == Block _ && head(y) == Void = [(merge' xs ys):(Block _)]
-					| head(x) == Void _ && head(y) == Block _ = [(merge'xs ys):(Block _)]
-				merge' grid1@[(x:xs):rest] grid2@[(y:ys):rest] = (merge' (head(grid1)) (head(grid2))) ++ []
 -}
+mergeGrids :: Grid -> Grid -> Position -> Grid
+mergeGrids [] _ _ = []
+mergeGrids grid1 [] _ = grid1
+mergeGrids (g:gs) (h:hs) (x,y)
+		| y > 0 = g:(mergeGrids (gs) (h:hs) (x,(y-1)))
+		| otherwise = g:(mergeGrids (gs) (hs) (x,y))
+		where
+			mergeRows [] _ _ = []
+			mergeRows row1 [] _ = row1
+			mergeRows (g:gs) (h:hs) (x,y)
+				| x > 0 = g:(mergeRows gs (h:hs) (x-1,y))
+				| isVoid h = g:(mergeRows (gs) (hs) (x,y))
+				| otherwise = h:(mergeRows (gs) (hs) (x,y))
+
 
 {- randomPiece
 	Returns a random piece
 -}
 randomPiece :: Grid
-randomPiece =  shapes !! 3
+randomPiece =  shapes !! (fst(randomR (1,7) 3 )
 
 
 {- applyMove
@@ -124,11 +125,16 @@ canRotate board piece offset = undefined;
 
 {- linesCleared board
 	Returns a board where if any lines are full they are cleared and gives how many lines were cleared
--}
+
 linesCleared :: Grid -> (Grid, Int)
-linesCleared board = undefined;
-
-
+linesCleared board@(x:xs) 
+		| lineFull x == True = clear' x
+		| otherwise linesCleared xs
+			where
+				clear' x n
+					| lineEmpty x == True
+					| lineEmpty x == False = (Void:(clear' tail(xs)),n+1)
+-}
  -- Tests a simple rotation of a small grid
 test1 = TestCase $ assertEqual "rotate"
 	([ [ Void, Block red ], [Void, Block red] ]) (turn [ [ Block red, Block red ], [Void, Void] ])

@@ -31,6 +31,9 @@ overlapRow (Block _:_) (Block _:_) = True
 overlapRow (_:xs) (_:ys) = overlapRow xs ys
 
 
+isVoid :: Block -> Bool
+isVoid Block _ = False
+isVoid Void = True
 {- lineFull line
 	Returns true if the line is completely filled with blocks
 -}
