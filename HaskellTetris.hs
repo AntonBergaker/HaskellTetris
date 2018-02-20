@@ -49,7 +49,7 @@ update inc (board, piece, offset, score, time) =
 	where
 		totalTime = time + inc
 		fallTime = 0.33
-		(newBoard, newPiece, newOffset) = fall board piece offset time
+		(newBoard, newPiece, newOffset, newScore) = fall board piece offset time score
 
 {- render gamestate
 	Creates a picture from the given gamestate
@@ -78,15 +78,21 @@ renderRow ((Block c):bs) (x,y) = color c ((translate (x-160) (320-y) (rectangleS
 {- fall
 	Checks if a piece can be moved down and if it can't returns a new piece and the old piece applied to the grid otherwise returns a new offset where the piece has been moved 1 step
 -}
-fall :: Grid -> Grid -> Position -> Float -> (Grid, Grid, Position)
-fall board piece (x, y) time = if (canFall)
-		then (board, piece, (x, y+1))
-		else (clearedBoard, newPiece, (5, 0))
+fall :: Grid -> Grid -> Position -> Float -> Int -> (Grid, Grid, Position, Int)
+fall board piece (x, y) time score = if (canFall)
+		then (board, piece, (x, y+1), score)
+		else (clearedBoard, newPiece, (5, 0), score + (getScore newPoints))
 	where
 		(clearedBoard, newPoints) = linesCleared newBoard
 		canFall = validPlace board piece (x,y+1)
 		newPiece = randomPiece time;
 		newBoard = mergeGrids board piece (x, y)
+
+
+getScore :: Int -> Int
+getScore score = if (score <= 0)
+	then 0
+	else (score^2)*10+50
 
 {- mergeGrids grid1 grid2 offset
 	Merges two grids into a single grid with the size of grid1
