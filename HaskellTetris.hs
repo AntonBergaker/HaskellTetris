@@ -18,6 +18,9 @@ background = black
 blockSize :: Float
 blockSize = 32
 
+boardBounds :: Position
+boardBounds = (10,20)
+
 
 newGameState :: GameState
 newGameState = (emptyBoard, t, (5,0), 0, 0)
@@ -71,9 +74,9 @@ renderRow ((Block c):bs) (x,y) = color c ((translate (x-160) (320-y) (rectangleS
 	Checks if a piece can be moved down and if it can't returns a new piece and the old piece applied to the grid otherwise returns a new offset where the piece has been moved 1 step
 -}
 fall :: Grid -> Grid -> Position -> (Grid, Grid, Position)
-fall board piece (x, y) = if (overlap board piece (x,y+1))
-		then (newBoard, newPiece, (5, 0))
-		else (board, piece, (x, y+1))
+fall board piece (x, y) = if (validPlace board piece (x,y+1))
+		then (board, piece, (x, y+1))
+		else (newBoard, newPiece, (5, 0))
 	where
 		canFall = overlap board piece (x, y+1)
 		newPiece = randomPiece;
@@ -96,6 +99,24 @@ mergeGrids (g:gs) (h:hs) (x,y)
 				| isVoid h = g:(mergeRows (gs) (hs) (x,y))
 				| otherwise = h:(mergeRows (gs) (hs) (x,y))
 
+validPlace :: Grid -> Grid -> Position -> Bool
+validPlace board piece offset = (not (overlap board piece offset)) && (inBounds piece offset boardBounds)
+
+inBounds :: Grid -> Position -> Position -> Bool
+inBounds [] _ _ = True
+inBounds (r: rs) (x,y) bounds
+	| inBoundsRow r (x,y) bounds = inBounds rs (x,y+1) bounds
+	| otherwise = False
+	where
+		inBoundsRow :: [Block] -> Position -> Position -> Bool
+		inBoundsRow [] _ _ = True
+		inBoundsRow (Block _:bs) (x, y) bounds@(bX, bY)
+			| x < 0 = False
+			| x>=bX = False
+			| y < 0 = False
+			| y>=bY = False
+			| otherwise = inBoundsRow bs (x+1, y) bounds
+		inBoundsRow (_:bs) (x, y) bounds = inBoundsRow bs (x+1, y) bounds
 
 {- randomPiece
 	Returns a random piece
