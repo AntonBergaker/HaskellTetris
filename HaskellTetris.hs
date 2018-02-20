@@ -60,10 +60,21 @@ fall board piece (x, y) = if canFall
 
 {- mergeGrids grid1 grid2 offset
 	Merges two grids into a single grid with the size of grid1
--}
-mergeGrids :: Grid -> Grid -> Position -> Grid
-mergeGrids = undefined;
 
+mergeGrids :: Grid -> Grid -> Position -> Grid
+mergeGrids grid1 grid2 offset = dropToOffset grid1 grid2 offset
+	where dropToOffset grid1 grid2 offset
+		| grid1 == offset && grid2 == offset = merge' grid1 grid2
+		| otherwise dropToOffset (drop 1 (tail(grid1) (drop 1 (tail(grid2)))
+			where
+				merge' [] [] = []
+				merge'
+				merge' [(x:xs)] [(y:ys)]
+					| head(x) == Void && head(y) == Void = [(merge' xs ys):Void]
+					| head(x) == Block _ && head(y) == Void = [(merge' xs ys):(Block _)]
+					| head(x) == Void _ && head(y) == Block _ = [(merge'xs ys):(Block _)]
+				merge' grid1@[(x:xs):rest] grid2@[(y:ys):rest] = (merge' (head(grid1)) (head(grid2))) ++ []
+-}
 
 {- randomPiece
 	Returns a random piece
