@@ -61,12 +61,14 @@ update inc (board, piece, offset, score, time) =
 render :: GameState -> Picture
 render (board, piece, (x,y), score, time) = allPictures
 	where
-		allPictures = pictures (boardPictures ++ piecePictures ++ scorePictures ++ borderPictures ++ levelPictures)
-		levelPictures  = renderLevel score
-		borderPictures = renderBorder
-		scorePictures  = renderHighscore score
-		boardPictures  = renderGrid board (0,0)
-		piecePictures  = renderGrid piece (x*blockSize, y*blockSize)
+		allPictures = pictures (boardPictures ++ piecePictures ++ scorePictures ++ borderPictures ++ levelPictures ++ previewPictures)
+		levelPictures   = renderLevel score
+		borderPictures  = renderBorder
+		scorePictures   = renderHighscore score
+		boardPictures   = renderGrid board (0,0) 1
+		piecePictures   = renderGrid piece (x*blockSize, y*blockSize) 1
+		previewPictures = renderPreview piece (prevX*blockSize, prevY*blockSize)
+		(prevX, prevY)  = dive board piece (x,y)
 
 renderBorder :: [Picture]
 renderBorder = 
@@ -89,17 +91,23 @@ renderLevel score =
 {- renderGrid grid position
 	returns a list of pictures from the input grid and position
 -}
-renderGrid :: Grid -> Position -> [Picture]
-renderGrid [] _ = []
-renderGrid (r:rs) p@(x,y) = (renderRow r p) ++ (renderGrid rs (x,y+blockSize))
+renderGrid :: Grid -> Position -> Float -> [Picture]
+renderGrid [] _ _ = []
+renderGrid (r:rs) p@(x,y) alpha = (renderRow r p alpha) ++ (renderGrid rs (x,y+blockSize) alpha)
 
 {- renderRow grid position
 	returns a list of pictures from the given row and position
 -}
-renderRow :: [Block] -> Position -> [Picture]
-renderRow [] _ = []
-renderRow  (Void:bs)     (x,y) = renderRow bs (x+blockSize, y)
-renderRow ((Block c):bs) (x,y) = color c ((translate (x-234) (304-y) (rectangleSolid blockSize blockSize))) : (renderRow bs (x+blockSize, y))
+renderRow :: [Block] -> Position -> Float -> [Picture]
+renderRow [] _  _ = []
+renderRow  (Void:bs)     (x,y) alpha = renderRow bs (x+blockSize, y) alpha
+renderRow ((Block c):bs) (x,y) alpha = (color ( withAlpha alpha c) $ translate (x-234) (304-y) $ rectangleSolid blockSize blockSize) : (renderRow bs (x+blockSize, y) alpha)
+
+
+renderPreview :: Grid -> Position -> [Picture]
+renderPreview grid position = map colorF (renderGrid grid position 0.5)
+	where
+		colorF picture = color red picture
 
 checkGameOver :: Grid -> Bool
 checkGameOver board = not (lineEmpty (head board))
