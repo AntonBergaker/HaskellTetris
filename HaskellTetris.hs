@@ -15,6 +15,9 @@ window = InWindow "Tetris" (500, 640) (10, 10)
 background :: Color
 background = black
 
+boardColor :: Color
+boardColor = makeColor (178/255) (240/255) (104/255) 1;
+
 blockSize :: Float
 blockSize = 32
 
@@ -70,20 +73,20 @@ render (board, piece, (x,y), score, time) = allPictures
 
 renderBorder :: [Picture]
 renderBorder = 
-				[color green (line [(-250,-320), (-250,320)])] ++
-				[color green (line [(  70,-320), (  70,320)])] ++
-				[color green (line [(-250,-321), ( 70,-321)])]
+				[color boardColor (line [(-250,-320), (-250,320)])] ++
+				[color boardColor (line [(  70,-320), (  70,320)])] ++
+				[color boardColor (line [(-250,-321), ( 70,-321)])]
 			   
 
 renderHighscore :: Int -> [Picture]
 renderHighscore score =
-	[translate 120 55 $ scale 0.2 0.2 $ color green $ text (show score)] ++
-	[translate 120 85 $ scale 0.2 0.2 $ color green $ text ("SCORE")]
+	[translate 120 55 $ scale 0.2 0.2 $ color boardColor $ text (show score)] ++
+	[translate 120 85 $ scale 0.2 0.2 $ color boardColor $ text ("SCORE")]
 
 renderLevel :: Int -> [Picture]
 renderLevel score = 
-	[translate 120 125 $ scale 0.2 0.2 $ color green $ text (show (getLevel score))] ++
-	[translate 120 155 $ scale 0.2 0.2 $ color green $ text ("LEVEL")]
+	[translate 120 125 $ scale 0.2 0.2 $ color boardColor $ text (show (getLevel score))] ++
+	[translate 120 155 $ scale 0.2 0.2 $ color boardColor $ text ("LEVEL")]
 
 
 {- renderGrid grid position
