@@ -51,7 +51,7 @@ update inc (board, piece, offset, score, time) =
 			else (board   , piece   , offset   , score   , totalTime)
 	where
 		totalTime = time + inc
-		fallTime = 0.33 - ((fromIntegral level) / 20)
+		fallTime = 0.5 - ((fromIntegral level) / 25)
 		level = getLevel score
 		(newBoard, newPiece, newOffset, newScore) = fall board piece offset time score
 
@@ -109,9 +109,9 @@ checkGameOver board = not (lineEmpty (head board))
 -}
 getLevel :: Int -> Int
 getLevel score 
-		| score >= 9000 = 9
+		| score >= 4500 = 9
 		| score <= 0 = 1
-		| otherwise = (score+1000) `div` 1000
+		| otherwise = (score+500) `div` 500
 
 
 {- fall
@@ -183,7 +183,7 @@ inBounds (r: rs) (x,y) bounds
 	Returns a random piece
 -}
 randomPiece :: Float -> Grid
-randomPiece time =  shapes !! ( (round (time*100000)) `mod` 7)
+randomPiece time =  shapes !! ( (round (time*100000000000000000)) `mod` 7)
 
 
 {- applyMove
