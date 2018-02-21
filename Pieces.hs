@@ -27,52 +27,52 @@ zC = makeColor (236/255) (111/255) (134/255) 1;
 
 i :: Grid
 i = [
-	[Void, Void, Block iC, Void],
-	[Void, Void, Block iC, Void],
-	[Void, Void, Block iC, Void],
-	[Void, Void, Block iC, Void]
-	]
+    [Void, Void, Block iC, Void],
+    [Void, Void, Block iC, Void],
+    [Void, Void, Block iC, Void],
+    [Void, Void, Block iC, Void]
+    ]
 
 j :: Grid
 j = [
-	[Void    , Block jC, Void],
-	[Void    , Block jC, Void],
-	[Block jC, Block jC, Void]
-	]
+    [Void    , Block jC, Void],
+    [Void    , Block jC, Void],
+    [Block jC, Block jC, Void]
+    ]
 
 l :: Grid
 l = [
-	[Void, Block lC, Void],
-	[Void, Block lC, Void],
-	[Void, Block lC, Block lC]
-	]
+    [Void, Block lC, Void],
+    [Void, Block lC, Void],
+    [Void, Block lC, Block lC]
+    ]
 
 o :: Grid
 o = [
-	[Block oC, Block oC],
-	[Block oC, Block oC]
-	]
+    [Block oC, Block oC],
+    [Block oC, Block oC]
+    ]
 
 s :: Grid
 s = [
-	[Void    , Void    , Void],
-	[Void    , Block sC, Block sC],
-	[Block sC, Block sC, Void]
-	]
+    [Void    , Void    , Void],
+    [Void    , Block sC, Block sC],
+    [Block sC, Block sC, Void]
+    ]
 
 t :: Grid
 t = [
-	[Void    , Block tC, Void],
-	[Block tC, Block tC, Block tC],
-	[Void    , Void    , Void]
-	]
+    [Void    , Block tC, Void],
+    [Block tC, Block tC, Block tC],
+    [Void    , Void    , Void]
+    ]
 
 z :: Grid
 z = [
-	[Void    , Void    , Void],
-	[Block zC, Block zC, Void],
-	[Void    , Block zC, Block zC]
-	]
+    [Void    , Void    , Void],
+    [Block zC, Block zC, Void],
+    [Void    , Block zC, Block zC]
+    ]
 
 shapes :: [Grid]
 shapes = [i, j, l, o, s, t, z]

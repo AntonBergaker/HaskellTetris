@@ -3,7 +3,7 @@ import Graphics.Gloss
 
 
 data Block = Void | Block Color
-	deriving (Eq, Show)
+    deriving (Eq, Show)
 type Grid = [[Block]]
 type Position = (Float,Float)
 
