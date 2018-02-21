@@ -6,6 +6,9 @@ import Test.HUnit
 import Pieces
 import System.Random
 
+{- Main
+
+-}
 main :: IO ()
 main = play window background 60 newGameState render handleKeys update
 
@@ -20,7 +23,7 @@ window = InWindow "Tetris" (500, 640) (10, 10)
 background :: Color
 background = black
 {- boardColor
-	Assigns boardColor to a color.
+	Assigns boardColor to a green-ish color.
 -}
 boardColor :: Color
 boardColor = makeColor (178/255) (240/255) (104/255) 1;
@@ -56,7 +59,14 @@ emptyBoard = replicate 20 $ replicate 10 Void
 
 
 {- handleKeys EventKey GameState
-	Creates
+	Detects keypresses and changes the GameState respectively to the pressed key.
+		KeyLeft - Moves piece to the left.
+		KeyRight - Moves the piece to the right.
+		KeyUp - Rotates piece clockwise.
+		KeyDown - Makes the piece dive to the bottom of the board.
+	RETURNS: Returns a a changed gameState.
+	EXAMPLE: handleKeys (EventKey (SpecialKey KeyLeft ) Down _ _) (board,t, (5,_), _, _)
+		returns: (board,t, (4,0), _, _)
 -}
 handleKeys :: Event -> GameState -> GameState
 handleKeys (EventKey (SpecialKey KeyLeft ) Down _ _) (board, piece, offset, score, time) = (board, piece, newOffsetL, score, time)
@@ -73,7 +83,12 @@ handleKeys (EventKey (SpecialKey KeyDown ) Down _ _) (board, piece, offset, scor
 		newOffsetDive = dive board piece offset
 handleKeys _ gameState = gameState
 
-
+{- update inc gameState
+	Updates the gameState and saves the time, level and score. A function to
+	step the gamestate on iteration.
+	PRE: True ?
+	RETURNS: An updated gameState.
+-}
 update :: Float -> GameState -> GameState
 update inc (board, piece, offset, score, time) =
 		if (totalTime > fallTime)
@@ -86,7 +101,8 @@ update inc (board, piece, offset, score, time) =
 		(newBoard, newPiece, newOffset, newScore) = fall board piece offset time score
 
 {- render gamestate
-	Creates a picture from the given gamestate
+	Creates a picture from the given gameState.
+	RETURNS: Returns a rendered Picture of the gamState.
 -}
 render :: GameState -> Picture
 render (board, piece, (x,y), score, time) = allPictures
@@ -100,13 +116,19 @@ render (board, piece, (x,y), score, time) = allPictures
 		previewPictures = renderPreview piece (prevX*blockSize, prevY*blockSize)
 		(prevX, prevY)  = dive board piece (x,y)
 
+{- renderBorder
+	Creates a Picture in list of colored boarders.
+	RETURNS: Returns a list of boarders.
+-}
 renderBorder :: [Picture]
 renderBorder =
 				[color boardColor (line [(-250,-320), (-250,320)])] ++
 				[color boardColor (line [(  70,-320), (  70,320)])] ++
 				[color boardColor (line [(-250,-321), ( 70,-321)])]
 
-
+{- renderHighscore score
+	Creates Picture of the given score together with the title "SCORE"
+-}
 renderHighscore :: Int -> [Picture]
 renderHighscore score =
 	[translate 120 55 $ scale 0.2 0.2 $ color boardColor $ text (show score)] ++
