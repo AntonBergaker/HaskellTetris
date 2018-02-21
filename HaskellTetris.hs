@@ -7,7 +7,7 @@ import Pieces
 import System.Random
 
 {- Main
-
+	Generetes a game simulation inside a window. 
 -}
 main :: IO ()
 main = play window background 60 newGameState render handleKeys update
@@ -62,7 +62,6 @@ newGameState = (emptyBoard, t, (5,0), 0, 0)
 
 {- emptyBoard
 	Creates a grid with 20*10 Void elements.
-	RETURNS: Returns a grid with Voids. 
 -}
 emptyBoard :: Grid
 emptyBoard = replicate 20 $ replicate 10 Void
