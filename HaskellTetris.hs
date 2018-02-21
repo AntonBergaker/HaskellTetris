@@ -9,28 +9,55 @@ import System.Random
 main :: IO ()
 main = play window background 60 newGameState render handleKeys update
 
+{- window
+	Creates a window for the main function.
+-}
 window :: Display
 window = InWindow "Tetris" (500, 640) (10, 10)
-
+{- background
+	Assigns background to the color black.
+-}
 background :: Color
 background = black
-
+{- boardColor
+	Assigns boardColor to a color.
+-}
 boardColor :: Color
 boardColor = makeColor (178/255) (240/255) (104/255) 1;
 
+{- blockSize
+	Assigns blockSize to a Float.
+-}
 blockSize :: Float
 blockSize = 32
 
+{- boardBounds
+	Gives a position for the bounds of the board.
+-}
 boardBounds :: Position
 boardBounds = (10,20)
 
-
+{- newGameState
+	Genereates a new gamestate with an
+	empty board,
+  a piece,
+	the initial offset for the piece,
+	initial the score,
+	and initial time.
+-}
 newGameState :: GameState
 newGameState = (emptyBoard, t, (5,0), 0, 0)
 
+{- emptyBoard
+	Creates a grid with 20*10 Void elements.
+-}
 emptyBoard :: Grid
 emptyBoard = replicate 20 $ replicate 10 Void
 
+
+{- handleKeys EventKey GameState
+	Creates
+-}
 handleKeys :: Event -> GameState -> GameState
 handleKeys (EventKey (SpecialKey KeyLeft ) Down _ _) (board, piece, offset, score, time) = (board, piece, newOffsetL, score, time)
 	where
@@ -74,11 +101,11 @@ render (board, piece, (x,y), score, time) = allPictures
 		(prevX, prevY)  = dive board piece (x,y)
 
 renderBorder :: [Picture]
-renderBorder = 
+renderBorder =
 				[color boardColor (line [(-250,-320), (-250,320)])] ++
 				[color boardColor (line [(  70,-320), (  70,320)])] ++
 				[color boardColor (line [(-250,-321), ( 70,-321)])]
-			   
+
 
 renderHighscore :: Int -> [Picture]
 renderHighscore score =
@@ -86,7 +113,7 @@ renderHighscore score =
 	[translate 120 85 $ scale 0.2 0.2 $ color boardColor $ text ("SCORE")]
 
 renderLevel :: Int -> [Picture]
-renderLevel score = 
+renderLevel score =
 	[translate 120 125 $ scale 0.2 0.2 $ color boardColor $ text (show (getLevel score))] ++
 	[translate 120 155 $ scale 0.2 0.2 $ color boardColor $ text ("LEVEL")]
 
@@ -119,7 +146,7 @@ checkGameOver board = not (lineEmpty (head board))
 	Returns the level based on the current score 1-9
 -}
 getLevel :: Int -> Int
-getLevel score 
+getLevel score
 		| score >= 4500 = 9
 		| score <= 0 = 1
 		| otherwise = (score+500) `div` 500
