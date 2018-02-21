@@ -7,7 +7,7 @@ import Pieces
 import System.Random
 
 {- Main
-
+	
 -}
 main :: IO ()
 main = play window background 60 newGameState render handleKeys update
@@ -49,7 +49,7 @@ boardBounds = (10,20)
 	and initial time.
 -}
 newGameState :: GameState
-newGameState = (emptyBoard, t, (5,0), 0, 0)
+newGameState = (emptyBoard, t, (4,0), 0, 0)
 
 {- emptyBoard
 	Creates a grid with 20*10 Void elements.
@@ -81,6 +81,8 @@ handleKeys (EventKey (SpecialKey KeyUp   ) Down _ _) (board, piece, offset, scor
 handleKeys (EventKey (SpecialKey KeyDown ) Down _ _) (board, piece, offset, score, time) = (board , piece, newOffsetDive, score, time)
 	where
 		newOffsetDive = dive board piece offset
+handleKeys (EventKey (Char 'r' ) Down _ _) (_, _, _, _, _) = newGameState
+
 handleKeys _ gameState = gameState
 
 {- update inc gameState
@@ -194,9 +196,9 @@ getLevel score
 -}
 fall :: Grid -> Grid -> Position -> Float -> Int -> (Grid, Grid, Position, Int)
 fall board piece (x, y) time score
-		| canFall == False && gameOver = (emptyBoard, newPiece, (5, 0), 0)
+		| canFall == False && gameOver = (emptyBoard, newPiece, (4, 0), 0)
 		| canFall = (board, piece, (x, y+1), score)
-		| otherwise = (clearedBoard, newPiece, (5, 0), score + (getScore  newPoints))
+		| otherwise = (clearedBoard, newPiece, (4, 0), score + (getScore  newPoints))
 	where
 		(clearedBoard, newPoints) = clearLines newBoard
 		gameOver = checkGameOver newBoard
