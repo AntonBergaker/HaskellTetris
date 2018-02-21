@@ -19,9 +19,15 @@ overlap field piece (xOff, yOff) = overlap' (drop (round yOff) field) piece (rou
 		overlap' :: Grid -> Grid -> Int -> Bool
 		overlap' [] _ _ = False
 		overlap' _ [] _ = False
-		overlap' (x:xs) (y:ys) xOff = if (overlapRow (drop xOff x) y)
-			then True
-			else overlap' xs ys xOff
+		overlap' (x:xs) (y:ys) xOff = 
+			if (xOff < 0) then
+				if (overlapRow (x) (drop (-xOff) y))
+					then True
+					else overlap' xs ys xOff
+			else 
+				if (overlapRow (drop xOff x) y)
+					then True
+					else overlap' xs ys xOff
 
 
 overlapRow :: [Block] -> [Block] -> Bool

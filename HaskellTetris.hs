@@ -10,7 +10,7 @@ main :: IO ()
 main = play window background 60 newGameState render handleKeys update
 
 window :: Display
-window = InWindow "Tetris" (400, 640) (10, 10)
+window = InWindow "Tetris" (500, 640) (10, 10)
 
 background :: Color
 background = black
@@ -35,10 +35,10 @@ handleKeys (EventKey (SpecialKey KeyLeft ) Down _ _) (board, piece, offset, scor
 handleKeys (EventKey (SpecialKey KeyRight) Down _ _) (board, piece, offset, score, time) = (board, piece, newOffsetR, score, time)
 	where
 		newOffsetR = applyMove board piece offset ( 1)
-handleKeys (EventKey (SpecialKey KeyUp) Down _ _) (board, piece, offset, score, time) = (board, newPiece, offset, score, time)
+handleKeys (EventKey (SpecialKey KeyUp   ) Down _ _) (board, piece, offset, score, time) = (board, newPiece, offset, score, time)
 	where
 		newPiece = applyRotate board piece offset
-handleKeys (EventKey (SpecialKey KeyDown) Down _ _)  (board, piece, offset, score, time) = (board , piece, newOffsetDive, score, time)
+handleKeys (EventKey (SpecialKey KeyDown ) Down _ _) (board, piece, offset, score, time) = (board , piece, newOffsetDive, score, time)
 	where
 		newOffsetDive = dive board piece offset
 handleKeys _ gameState = gameState
@@ -47,21 +47,44 @@ handleKeys _ gameState = gameState
 update :: Float -> GameState -> GameState
 update inc (board, piece, offset, score, time) =
 		if (totalTime > fallTime)
-			then (newBoard, newPiece, newOffset, score, totalTime - fallTime)
-			else (board   , piece   , offset   , score, totalTime)
+			then (newBoard, newPiece, newOffset, newScore, totalTime - fallTime)
+			else (board   , piece   , offset   , score   , totalTime)
 	where
 		totalTime = time + inc
-		fallTime = 0.33
+		fallTime = 0.33 - ((fromIntegral level) / 20)
+		level = getLevel score
 		(newBoard, newPiece, newOffset, newScore) = fall board piece offset time score
 
 {- render gamestate
 	Creates a picture from the given gamestate
 -}
 render :: GameState -> Picture
-render (board, piece, (x,y), score, time) = pictures (boardPictures ++ piecePictures)
+render (board, piece, (x,y), score, time) = allPictures
 	where
-		boardPictures = renderGrid board (0,0)
-		piecePictures = renderGrid piece (x*blockSize, y*blockSize)
+		allPictures = pictures (boardPictures ++ piecePictures ++ scorePictures ++ borderPictures ++ levelPictures)
+		levelPictures  = renderLevel score
+		borderPictures = renderBorder
+		scorePictures  = renderHighscore score
+		boardPictures  = renderGrid board (0,0)
+		piecePictures  = renderGrid piece (x*blockSize, y*blockSize)
+
+renderBorder :: [Picture]
+renderBorder = 
+				[color green (line [(-250,-320), (-250,320)])] ++
+				[color green (line [(  70,-320), (  70,320)])] ++
+				[color green (line [(-250,-321), ( 70,-321)])]
+			   
+
+renderHighscore :: Int -> [Picture]
+renderHighscore score =
+	[translate 120 55 $ scale 0.2 0.2 $ color green $ text (show score)] ++
+	[translate 120 85 $ scale 0.2 0.2 $ color green $ text ("SCORE")]
+
+renderLevel :: Int -> [Picture]
+renderLevel score = 
+	[translate 120 125 $ scale 0.2 0.2 $ color green $ text (show (getLevel score))] ++
+	[translate 120 155 $ scale 0.2 0.2 $ color green $ text ("LEVEL")]
+
 
 {- renderGrid grid position
 	returns a list of pictures from the input grid and position
@@ -76,17 +99,32 @@ renderGrid (r:rs) p@(x,y) = (renderRow r p) ++ (renderGrid rs (x,y+blockSize))
 renderRow :: [Block] -> Position -> [Picture]
 renderRow [] _ = []
 renderRow  (Void:bs)     (x,y) = renderRow bs (x+blockSize, y)
-renderRow ((Block c):bs) (x,y) = color c ((translate (x-160) (320-y) (rectangleSolid blockSize blockSize))) : (renderRow bs (x+blockSize, y))
+renderRow ((Block c):bs) (x,y) = color c ((translate (x-234) (304-y) (rectangleSolid blockSize blockSize))) : (renderRow bs (x+blockSize, y))
+
+checkGameOver :: Grid -> Bool
+checkGameOver board = not (lineEmpty (head board))
+
+{- getLevel score
+	Returns the level based on the current score 1-9
+-}
+getLevel :: Int -> Int
+getLevel score 
+		| score >= 9000 = 9
+		| score <= 0 = 1
+		| otherwise = (score+1000) `div` 1000
+
 
 {- fall
 	Checks if a piece can be moved down and if it can't returns a new piece and the old piece applied to the grid otherwise returns a new offset where the piece has been moved 1 step
 -}
 fall :: Grid -> Grid -> Position -> Float -> Int -> (Grid, Grid, Position, Int)
-fall board piece (x, y) time score = if (canFall)
-		then (board, piece, (x, y+1), score)
-		else (clearedBoard, newPiece, (5, 0), score + (getScore newPoints))
+fall board piece (x, y) time score
+		| canFall == False && gameOver = (emptyBoard, newPiece, (5, 0), 0)
+		| canFall = (board, piece, (x, y+1), score)
+		| otherwise = (clearedBoard, newPiece, (5, 0), score + (getScore  newPoints))
 	where
-		(clearedBoard, newPoints) = linesCleared newBoard
+		(clearedBoard, newPoints) = clearLines newBoard
+		gameOver = checkGameOver newBoard
 		canFall = validPlace board piece (x,y+1)
 		newPiece = randomPiece time;
 		newBoard = mergeGrids board piece (x, y)
@@ -101,7 +139,7 @@ dive board piece (x,y)
 getScore :: Int -> Int
 getScore score = if (score <= 0)
 	then 0
-	else (score^2)*10+50
+	else (score^2)*30+50
 
 
 {- mergeGrids grid1 grid2 offset
@@ -180,22 +218,16 @@ applyRotate board piece offset =
 
 
 
-{- linesCleared board
+{- clearLines board
 	Returns a board where if any lines are full they are cleared and gives how many lines were cleared
 -}
-linesCleared :: Grid -> (Grid, Int)
-linesCleared board = ((replicate missingLines voidRow) ++ remainingLines, 20 - missingLines)
+clearLines :: Grid -> (Grid, Int)
+clearLines board = ((replicate missingLines voidRow) ++ remainingLines, missingLines)
 		where
-			remainingLines = linesCleared' board
-			missingLines = 20 - (length remainingLines)
-
-			linesCleared' :: Grid -> Grid
-			linesCleared' [] = []
-			linesCleared' (x:xs)
-				| lineFull x = linesCleared' xs
-				| otherwise = x:(linesCleared' xs)
-
-			voidRow = replicate 10 Void
+			remainingLines = filter f board
+			f row = not (lineFull row)
+			missingLines = (length board) - (length remainingLines)
+			voidRow = replicate (length (board !! 0)) Void
 
 
 
@@ -219,4 +251,10 @@ test5 = TestCase $ assertEqual "overlap2"
 test6 = TestCase $ assertEqual "overlap3"
 	(True) (overlap ([[Void, Void],  [Void, Block blue]])  ([[Block blue, Void],  [Void, Void]]) (1,1) )
 
-runtests = runTestTT $ TestList [test1,test2,test3,test4, test5, test6]
+test7 = TestCase $ assertEqual "clearLines1"
+	([[Void, Void], [Block blue, Void]], 1) (clearLines [[Block blue, Void] , [Block blue, Block blue]] )
+
+test8 = TestCase $ assertEqual "clearLines2"
+	([[Block blue, Void] , [Void, Block blue]], 0) (clearLines [[Block blue, Void] , [Void, Block blue]] )
+
+runtests = runTestTT $ TestList [test1,test2,test3,test4, test5, test6, test7, test8]
