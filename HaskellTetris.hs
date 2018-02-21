@@ -7,26 +7,32 @@ import Pieces
 import System.Random
 
 {- Main
-	
+	Generates a game simulation inside a window. 
 -}
 main :: IO ()
 main = play window background 60 newGameState render handleKeys update
+
 
 {- window
 	Creates a window for the main function.
 -}
 window :: Display
 window = InWindow "Tetris" (500, 640) (10, 10)
+
+
 {- background
 	Assigns background to the color black.
 -}
 background :: Color
 background = black
+
+
 {- boardColor
 	Assigns boardColor to a green-ish color.
 -}
 boardColor :: Color
 boardColor = makeColor (178/255) (240/255) (104/255) 1;
+
 
 {- blockSize
 	Assigns blockSize to a Float.
@@ -34,11 +40,13 @@ boardColor = makeColor (178/255) (240/255) (104/255) 1;
 blockSize :: Float
 blockSize = 32
 
+
 {- boardBounds
 	Gives a position for the bounds of the board.
 -}
 boardBounds :: Position
 boardBounds = (10,20)
+
 
 {- newGameState
 	Genereates a new gamestate with an
@@ -50,6 +58,7 @@ boardBounds = (10,20)
 -}
 newGameState :: GameState
 newGameState = (emptyBoard, t, (4,0), 0, 0)
+
 
 {- emptyBoard
 	Creates a grid with 20*10 Void elements.
@@ -85,10 +94,10 @@ handleKeys (EventKey (Char 'r' ) Down _ _) (_, _, _, _, _) = newGameState
 
 handleKeys _ gameState = gameState
 
+
 {- update inc gameState
 	Updates the gameState and saves the time, level and score. A function to
 	step the gamestate on iteration.
-	PRE: True ?
 	RETURNS: An updated gameState.
 -}
 update :: Float -> GameState -> GameState
@@ -101,6 +110,7 @@ update inc (board, piece, offset, score, time) =
 		fallTime = 0.5 - ((fromIntegral level) / 25)
 		level = getLevel score
 		(newBoard, newPiece, newOffset, newScore) = fall board piece offset time score
+
 
 {- render gamestate
 	Creates a picture from the given gameState.
@@ -118,9 +128,10 @@ render (board, piece, (x,y), score, time) = allPictures
 		previewPictures = renderPreview piece (prevX*blockSize, prevY*blockSize)
 		(prevX, prevY)  = dive board piece (x,y)
 
+
 {- renderBorder
-	Creates a Picture in list of colored boarders.
-	RETURNS: Returns a list of boarders.
+	Returns a list of pictures of colored boarders.
+	RETURNS: Returns a list of pictures of boarders.
 -}
 renderBorder :: [Picture]
 renderBorder =
@@ -128,13 +139,16 @@ renderBorder =
 				[color boardColor (line [(  70,-320), (  70,320)])] ++
 				[color boardColor (line [(-250,-321), ( 70,-321)])]
 
+
 {- renderHighscore score
-	Creates Picture of the given score together with the title "SCORE"
+	Returns a list of pictures of the given score together with the title "SCORE".
+	RETURNS: A list of pictures based on the given score.
 -}
 renderHighscore :: Int -> [Picture]
 renderHighscore score =
 	[translate 120 55 $ scale 0.2 0.2 $ color boardColor $ text (show score)] ++
 	[translate 120 85 $ scale 0.2 0.2 $ color boardColor $ text ("SCORE")]
+
 
 {- renderLevel score
 	Returns a list of pictures showing the level at a position with the caption "LEVEL" based on the supplied score
@@ -163,7 +177,7 @@ renderRow [] _  _ = []
 renderRow  (Void:bs)     (x,y) alpha = renderRow bs (x+blockSize, y) alpha
 renderRow ((Block c):bs) (x,y) alpha = (color ( withAlpha alpha c) $ translate (x-234) (304-y) $ rectangleSolid blockSize blockSize) : (renderRow bs (x+blockSize, y) alpha)
 
-{- renderPreview piece position 
+{- renderPreview piece position
 	Returns a list of pictures representing the faded grid at the given position
 	RETURNS: A collection of pictures based on the supplied grid and position
 -}
