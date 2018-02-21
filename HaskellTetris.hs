@@ -62,6 +62,7 @@ newGameState = (emptyBoard, t, (5,0), 0, 0)
 
 {- emptyBoard
 	Creates a grid with 20*10 Void elements.
+	RETURNS: Returns a grid with Voids. 
 -}
 emptyBoard :: Grid
 emptyBoard = replicate 20 $ replicate 10 Void
@@ -96,7 +97,6 @@ handleKeys _ gameState = gameState
 {- update inc gameState
 	Updates the gameState and saves the time, level and score. A function to
 	step the gamestate on iteration.
-	PRE: True ?
 	RETURNS: An updated gameState.
 -}
 update :: Float -> GameState -> GameState
@@ -129,8 +129,8 @@ render (board, piece, (x,y), score, time) = allPictures
 
 
 {- renderBorder
-	Creates a Picture in list of colored boarders.
-	RETURNS: Returns a list of boarders.
+	Returns a list of pictures of colored boarders.
+	RETURNS: Returns a list of pictures of boarders.
 -}
 renderBorder :: [Picture]
 renderBorder =
@@ -140,7 +140,8 @@ renderBorder =
 
 
 {- renderHighscore score
-	Creates Picture of the given score together with the title "SCORE"
+	Returns a list of pictures of the given score together with the title "SCORE".
+	RETURNS: A list of pictures based on the given score.
 -}
 renderHighscore :: Int -> [Picture]
 renderHighscore score =
