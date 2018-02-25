@@ -73,6 +73,7 @@ emptyBoard = replicate 20 $ replicate 10 Void
         KeyRight - Moves the piece to the right.
         KeyUp - Rotates piece clockwise.
         KeyDown - Makes the piece dive to the bottom of the board.
+    PRE: True
     RETURNS: Returns a a changed gameState.
     EXAMPLE: handleKeys (EventKey (SpecialKey KeyLeft ) Down _ _) (board,t, (5,_), _, _)
         returns: (board,t, (4,0), _, _)
@@ -98,6 +99,7 @@ handleKeys _ gameState = gameState
 {- update inc gameState
     Updates the gameState and saves the time, level and score. A function to
     step the gamestate on iteration.
+    PRE: True
     RETURNS: An updated gameState.
 -}
 update :: Float -> GameState -> GameState
@@ -114,6 +116,7 @@ update inc (board, piece, offset, score, time) =
 
 {- render gamestate
     Creates a picture from the given gameState.
+    PRE: True
     RETURNS: Returns a rendered Picture of the gamState.
 -}
 render :: GameState -> Picture
@@ -131,6 +134,7 @@ render (board, piece, (x,y), score, time) = allPictures
 
 {- renderBorder
     Returns a list of pictures of colored boarders.
+    PRE: True
     RETURNS: Returns a list of pictures of boarders.
 -}
 renderBorder :: [Picture]
@@ -141,8 +145,9 @@ renderBorder =
 
 
 {- renderHighscore score
-    Returns a list of pictures of the given score together with the title "SCORE".
-    RETURNS: A list of pictures based on the given score.
+    Returns a list of pictures of the given score together with the title "SCORE"
+    PRE: True
+    RETURNS: A list of pictures based on the given score
 -}
 renderHighscore :: Int -> [Picture]
 renderHighscore score =
@@ -152,6 +157,7 @@ renderHighscore score =
 
 {- renderLevel score
     Returns a list of pictures showing the level at a position with the caption "LEVEL" based on the supplied score
+    PRE: True
     RETURNS: Two pictures in a list showing the level at a position based on the supplied score
 -}
 renderLevel :: Int -> [Picture]
@@ -162,6 +168,7 @@ renderLevel score =
 
 {- renderGrid grid position alpha
     Returns a list of pictures from the given row and its position on screen with the given alpha value
+    PRE: True
     RETURNS: A list of pictures based on the supplied grid and position with the given alpha value
 -}
 renderGrid :: Grid -> Position -> Float -> [Picture]
@@ -170,6 +177,7 @@ renderGrid (r:rs) p@(x,y) alpha = (renderRow r p alpha) ++ (renderGrid rs (x,y+b
 
 {- renderRow row position alpha
     Returns a list of pictures from the given row and its position on screen with the given alpha value
+    PRE: True
     RETURNS: A list of pictures based on the supplied row and position with the given alpha value
 -}
 renderRow :: [Block] -> Position -> Float -> [Picture]
@@ -179,6 +187,7 @@ renderRow ((Block c):bs) (x,y) alpha = (color ( withAlpha alpha c) $ translate (
 
 {- renderPreview piece position
     Returns a list of pictures representing the faded grid at the given position
+    PRE: True
     RETURNS: A collection of pictures based on the supplied grid and position
 -}
 renderPreview :: Grid -> Position -> [Picture]
@@ -187,6 +196,7 @@ renderPreview grid position = renderGrid grid position 0.5
 
 {- checkGameOver board
     Checks whether the current game is lost
+    PRE: True
     RETURNS: True if there's a piece on the top of the board
 -}
 checkGameOver :: Grid -> Bool
@@ -194,6 +204,7 @@ checkGameOver board = not (lineEmpty (head board))
 
 {- getLevel score
     Returns the level based on the current score where the level is 1-9
+    PRE: True
     RETURNS: The level based on the current score where the level is 1-9
     EXAMPLE: getLevel 1251 = 3
 -}
@@ -206,6 +217,7 @@ getLevel score
 
 {- fall board piece offset time score
     Updates the game by moving the current piece down one step. This can mean you lose the game, that you clear rows and get points and get new pieces
+    PRE: True
     RETURNS: An updated board, piece and position and score that has been updated according to the game rules
 -}
 fall :: Grid -> Grid -> Position -> Float -> Int -> (Grid, Grid, Position, Int)
@@ -223,6 +235,7 @@ fall board piece (x, y) time score
 
 {- dive board piece offset
     Returns the bottom level position at a specific offset based on the grid and piece
+    PRE: True
     RETURNS: The lowest point the given piece can reach in a straight line without colliding or breaching the bounds
 -}
 dive :: Grid -> Grid -> Position -> Position
@@ -233,6 +246,7 @@ dive board piece (x,y)
 
 {- getScore clearedLines
     Returns how much score to get based on how many lines was cleared
+    PRE: True
     RETURNS: How many points a certain number of cleared lines was worth
     EXAMPLE: getScore 3 = 320
 -}
@@ -266,6 +280,7 @@ mergeGrids (g:gs) (h:hs) (x,y)
 
 {- validPlace board piece offsets
     Checks if a given piece and offset does not collide with the board and that it's inside the bounds
+    PRE: True
     RETURNS: True if the given place and offset does not collide and is inside the bounds
 -}
 validPlace :: Grid -> Grid -> Position -> Bool
@@ -273,6 +288,7 @@ validPlace board piece offset = (not (overlap board piece offset)) && (inBounds 
 
 {- inBounds piece offset bounds
     Checks if a given piece is inside the games boundries as supplied with the bounds argument
+    PRE: True
     RETURNS: True if the piece is inside the bounds, False if it's partially or completely outside
     INVARIANT: Size of the grid
 -}
@@ -294,6 +310,7 @@ inBounds (r: rs) (x,y) bounds
 
 {- randomPiece time
     Returns a "random" tetris piece based on the current gametime
+    PRE: True
     RETURNS: One of the seven tetris shapes semi-randomly based on the time
     EXAMPLE: randomPiece 1.012313 = [[Block (RGBA 0.6784314 0.38039216 0.92941177 1.0),Block (RGBA 0.6784314 0.38039216 0.92941177 1.0)],[Block (RGBA 0.6784314 0.38039216 0.92941177 1.0),Block (RGBA 0.6784314 0.38039216 0.92941177 1.0)]]
 -}
@@ -303,6 +320,7 @@ randomPiece time =  shapes !! ( (round (time*10000000000000)) `mod` 7)
 
 {- applyMove board piece offset movement
     Checks if you can move a piece to a given location, and if you can return that location
+    PRE: True
     RETURNS: The new location if the movement was allowed. The old location if not
 -}
 applyMove :: Grid -> Grid -> Position -> Float -> Position
@@ -314,6 +332,7 @@ applyMove board piece offset@(x,y) movement = if cM
 
 {- canMove board piece offset movement
     Checks if a piece can be moved left or right based on the supplied movement and offset
+    PRE: True
     RETURNS: True if it can be moved, false if not
 -}
 canMove :: Grid -> Grid -> Position -> Float -> Bool
@@ -324,6 +343,7 @@ canMove board piece (x,y) movement = (validPlace board piece o)
 
 {- applyRotate board piece offset
     Checks if you can rotate the piece at the given position and if you can returns the rotated piece
+    PRE: True
     RETURNS: The rotated grid if it was able to rotate, the supplied grid if it was not able to rotate
 -}
 applyRotate :: Grid -> Grid -> Position -> Grid
@@ -338,6 +358,7 @@ applyRotate board piece offset =
 
 {- clearLines board
     Returns a board where if any lines are full they are cleared and returns the new grid with the lines removed as well as how many was cleared
+    PRE: True
     RETURNS: (Board where the filled lines are cleared, Int of how many lines were cleared)
     INVARIANT: Size of the grid
     EXAMPLE: clearLines [[Block blue, Void] , [Block blue, Block blue]] = ([[Void, Void], [Block blue, Void]], 1)

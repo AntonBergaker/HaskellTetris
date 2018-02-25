@@ -5,6 +5,7 @@
     
     {- rotate grid
         Rotates the supplied grid clockwise
+        PRE: True
         RETURNS: The supplied grid rotated clockwise
         EXAMPLE: turn [ [ Block red, Block red ], [Void, Void] ] = [ [ Void, Block red ], [Void, Block red] ]
     -}
@@ -38,6 +39,7 @@
     
     {- overlapRow row1 row2
         Checks if two rows have overlapping blocks
+        PRE: True
         RETURNS: True if the rows have collisions, False if they do not
         INVARIANT: Size of the rows
         EXAMPLE: overlapRow [Block red, Void] [Block red, Void] = True
@@ -51,6 +53,7 @@
     
     {- isVoid block
         Checks if a block is void or filled
+        PRE: True
         RETURNS: True if the block is void, False if it is filled
         EXAMPLES: isVoid (Block red) = False,  isVoid Void = True
     -}
@@ -61,6 +64,7 @@
     
     {- lineFull line
         Checks if a line is completely filled with blocks where no blocks are void
+        PRE: True
         RETURNS: True if there exists at least one void in the line
         INVARIANT: Size of the line
         EXAMPLE: lineFull [Block red, Block red, Block blue] = True
@@ -72,6 +76,7 @@
     
     {- lineEmpty line
         Checks if a line is completely empty of blocks
+        PRE: True
         RETURNS: True if there are no non-voided blocks in the line. Otherwise False
         INVARIANT: Size of the line
         EXAMPLE: lineEmpty [Block red, Void, Void] = False
