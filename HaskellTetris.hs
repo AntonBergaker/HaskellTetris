@@ -298,7 +298,7 @@ inBounds (r: rs) (x,y) bounds
     EXAMPLE: randomPiece 1.012313 = [[Block (RGBA 0.6784314 0.38039216 0.92941177 1.0),Block (RGBA 0.6784314 0.38039216 0.92941177 1.0)],[Block (RGBA 0.6784314 0.38039216 0.92941177 1.0),Block (RGBA 0.6784314 0.38039216 0.92941177 1.0)]]
 -}
 randomPiece :: Float -> Grid
-randomPiece time =  shapes !! ( (round (time*100000000000000000)) `mod` 7)
+randomPiece time =  shapes !! ( (round (time*10000000000000)) `mod` 7)
 
 
 {- applyMove board piece offset movement
