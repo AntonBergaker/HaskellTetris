@@ -403,3 +403,5 @@ test9 = TestCase $ assertEqual "mergeGrids"
      ([[Block blue, Void], [Block blue, Block red]]) (mergeGrids [[Block blue, Void],[Void, Void]] [[Block blue, Block red], [Void, Void]] (0,1))
 -- Runs all tests
 runtests = runTestTT $ TestList [test1,test2,test3,test4, test5, test6, test7, test8, test9]
+
+-- We also let people test the program and give feedback
